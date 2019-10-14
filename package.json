@@ -1,0 +1,30 @@
+{
+  "name": "DataViz",
+  "displayName": "RRaP Data Visualizer",
+  "version": "0.1.0",
+  "description": "Data visualization platform for RRaP rockets",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reusable-rocketry-at-purdue/DataVis.git"
+  },
+  "keywords": [
+    "Data",
+    "Visualization",
+    "Rocket",
+    "Reusable",
+    "Purdue"
+  ],
+  "author": "Dawson Moore",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/reusable-rocketry-at-purdue/DataVis/issues"
+  },
+  "homepage": "https://github.com/reusable-rocketry-at-purdue/DataVis#readme",
+  "dependencies": {
+    "electron": "^6.0.12"
+  }
+}
