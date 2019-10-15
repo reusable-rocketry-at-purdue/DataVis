@@ -1,0 +1,166 @@
+<!DOCTYPE HTML>
+<html>
+<head>  
+</head>
+<body>
+<div id="chartContainer0" style="height: 370px; width: 50%;"></div>
+<button type="button" id="test" onclick="startOperation()">Start</button>
+
+<button type="button" id="test" onclick="myFunction1(0)">x-axis</button>
+<button type="button" id="test" onclick="myFunction2(0)">y-axis</button>
+<button type="button" id="test" onclick="myFunction3(0)">z-axis</button>
+
+<button type="button" id="test" onclick="myFunction1(1)">x-axis</button>
+<button type="button" id="test" onclick="myFunction2(1)">y-axis</button>
+<button type="button" id="test" onclick="myFunction3(1)">z-axis</button>
+<p1 id = 'output'></p1><br>
+<div id="chartContainer1" style="height: 370px; width: 50%;"></div><br>
+
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script type="text/javascript" src="testDataPoints.js"></script>
+</body>
+<script>
+        var dataObject = {
+            points: "test",
+            
+        }
+        function startOperation(){
+            dataObject.points = randomPoints();
+            document.getElementById('output').innerHTML = "Starting now"
+
+        }
+        function randomPoints(){
+            var yArray = [];
+            for(var i = 0; i < 50000; i += 1){
+                var x = (Math.random() * 10) - 5;
+                var y = (Math.random() * 10) - 5;
+                var z = (Math.random() * 10) - 5;
+                var newArray = [x, y, z]
+                yArray.push(newArray);
+            }
+            return yArray;
+        }
+        
+        function myFunction1(chartNumber) {
+            var limit = 50000;
+            var x = 100;    
+            var data = [];
+            var dataSeries = { type: "line" };
+            var dataPoints = [];
+            var xArray = randomPoints();
+            for (var i = 0; i < limit; i += 1) {
+                x += dataObject.points[i][0];
+                dataPoints.push({
+                    x: i,
+                    y: x
+                });
+            }
+            dataSeries.dataPoints = dataPoints;
+            data.push(dataSeries);
+
+            var options = {
+                zoomEnabled: true,
+                animationEnabled: true,
+                title: {
+                    text: "Distance traveled in x direction over time"
+                },
+                axisY: {
+                    includeZero: false,
+                    lineThickness: 1
+                },
+                data: data 
+            };
+            
+            if( chartNumber == 0 ){
+                var chart = new CanvasJS.Chart("chartContainer0", options);
+                chart.render();
+            }
+            else{
+                var chart = new CanvasJS.Chart("chartContainer1", options);
+                chart.render();
+
+            }        
+        }
+        function myFunction2(chartNumber){ 
+            var limit = 50000;
+            var y = 100;    
+            var data = [];
+            var dataSeries = { type: "line" };
+            var dataPoints = [];
+            for (var i = 0; i < limit; i += 1) {
+                y += dataObject.points[i][1];
+                dataPoints.push({
+                    x: i,
+                    y: y
+                });
+            }
+            dataSeries.dataPoints = dataPoints;
+            data.push(dataSeries);
+            
+            //Better to construct options first and then pass it as a parameter
+            var options = {
+                zoomEnabled: true,
+                animationEnabled: true,
+                title: {
+                    text: "Distance traveled in y direction over time"
+                },
+                axisY: {
+                    includeZero: false,
+                    lineThickness: 1
+                },
+                data: data  // random data
+            };
+            
+            if( chartNumber == 0 ){
+                var chart = new CanvasJS.Chart("chartContainer0", options);
+                chart.render();
+            }
+            else{
+                var chart = new CanvasJS.Chart("chartContainer1", options);
+                chart.render();
+
+            }  
+        }
+        function myFunction3(chartNumber){
+            var limit = 50000;
+            var z = 100;    
+            var data = [];
+            var dataSeries = { type: "line" };
+            var dataPoints = [];
+            for (var i = 0; i < limit; i += 1) {
+                z += dataObject.points[i][2];
+                dataPoints.push({
+                    x: i,
+                    y: z
+                });
+            }
+            dataSeries.dataPoints = dataPoints;
+            data.push(dataSeries);
+            
+            //Better to construct options first and then pass it as a parameter
+            var options = {
+                zoomEnabled: true,
+                animationEnabled: true,
+                title: {
+                    text: "Distance traveled in z direction over time"
+                },
+                axisY: {
+                    includeZero: false,
+                    lineThickness: 1
+                },
+                data: data  // random data
+            };
+            
+            if( chartNumber == 0 ){
+                var chart = new CanvasJS.Chart("chartContainer0", options);
+                chart.render();
+            }
+            else{
+                var chart = new CanvasJS.Chart("chartContainer1", options);
+                chart.render();
+
+            }  
+        }
+        
+        </script>
+</html>
