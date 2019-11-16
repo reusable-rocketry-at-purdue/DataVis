@@ -1,166 +1,329 @@
 <!DOCTYPE HTML>
 <html>
-<head>  
+<head> 
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <style>
+    * {
+        box-sizing: border-box;
+    }
+    header {
+        background-color: #666;
+        padding: 30px;
+        font-size: 35px;
+        color: white;
+    }
+    .startButton {
+        background-color: rgb(146, 146, 146);
+        color: white;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+    }
+    .dropbtn {
+        background-color: rgb(65, 179, 255);
+        color: white;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+    }
+    .dropbtn2 {
+        background-color: rgb(146, 146, 146);
+        color: white;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+    }
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+    .dropbtn:hover, .dropbtn:focus {
+        background-color: #2980B9;
+    }
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f1f1f100;
+        min-width: auto;
+        overflow: auto;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+    .dropdown a:hover {background-color: #ddd;}
+ 
+    .show {display: block;}
+ 
+    .graph3D{
+        width: 100%;
+        height: 100%;
+    }
+ 
+    section:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+    nav {
+        border-style: solid;
+        border-width: 5px;
+        float: left;
+        width: 50%;
+        padding: 20px;
+        height: 370px;    
+    }
+    article {
+        border-style: solid;
+        border-width: 5px;
+        float: left;
+        width: 50%;
+        padding: 20px;
+        height: 370px;            
+    }
+    .graph3D{
+        width: 90%;
+    }
+    footer {
+        border-style: solid;
+        border-width: 5px;
+    }
+    </style>
 </head>
 <body>
-<div id="chartContainer0" style="height: 370px; width: 50%;"></div>
-<button type="button" id="test" onclick="startOperation()">Start</button>
-
-<button type="button" id="test" onclick="myFunction1(0)">x-axis</button>
-<button type="button" id="test" onclick="myFunction2(0)">y-axis</button>
-<button type="button" id="test" onclick="myFunction3(0)">z-axis</button>
-
-<button type="button" id="test" onclick="myFunction1(1)">x-axis</button>
-<button type="button" id="test" onclick="myFunction2(1)">y-axis</button>
-<button type="button" id="test" onclick="myFunction3(1)">z-axis</button>
-<p1 id = 'output'></p1><br>
-<div id="chartContainer1" style="height: 370px; width: 50%;"></div><br>
-
-<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-<script type="text/javascript" src="testDataPoints.js"></script>
+  <header>
+        <form id="jsonFile" name="jsonFile" enctype="multipart/form-data" method="post">
+            <fieldset>
+                <h2>Choose JSON file:</h2>
+                <input type='file' id='fileinput'>
+                <input type='button' id='btnLoad' value='Load' onclick='loadFile();'>
+            </fieldset>
+        </form><br>
+        <button type="button" id="test" onclick="make3DGraph()" class="startButton">Make 3D graph</button><br>
+        <br>
+        <p1>Data Points In:</p1><p2 id = "output"></p2>
+        <br><br>
+        <div class="dropdown">
+            <button onclick="dropDownFunction(0)" class="dropbtn">Graph One</button>
+            <div id="myDropdown0" class="dropdown-content">
+                <button type="button" id="test" onclick="makeGraph(0, 'myDropdown0', 'xAccel')" class="dropbtn2">x-axis</button>
+                <button type="button" id="test" onclick="makeGraph(0, 'myDropdown0', 'yAccel')" class="dropbtn2">y-axis</button>
+                <button type="button" id="test" onclick="makeGraph(0, 'myDropdown0', 'zAccel')" class="dropbtn2">z-axis</button>
+                <button type="button" id="test" onclick="makeGraph(0, 'myDropdown0', 'barameter')" class="dropbtn2">barameter</button>
+                <button type="button" id="test" onclick="makeGraph(0, 'myDropdown0', 'temperature')" class="dropbtn2">z-temperature</button>
+            </div>
+        </div>
+    </header>
+    <br>
+    <section>
+        <div id="chartContainer0" style="height: 100%; width: 100%;"></div>
+    </section>
+    <footer>
+        <div id="graph" class = "graph3D"></div>
+    </footer>
+ 
 </body>
-<script>
-        var dataObject = {
-            points: "test",
-            
-        }
-        function startOperation(){
-            dataObject.points = randomPoints();
-            document.getElementById('output').innerHTML = "Starting now"
+ 
+  <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script type="text/javascript" src="testDataPoints.js"></script>
+  <script src="data.js"></script>
+ 
+<script type="text/javascript">
 
-        }
-        function randomPoints(){
-            var yArray = [];
-            for(var i = 0; i < 50000; i += 1){
-                var x = (Math.random() * 10) - 5;
-                var y = (Math.random() * 10) - 5;
-                var z = (Math.random() * 10) - 5;
-                var newArray = [x, y, z]
-                yArray.push(newArray);
-            }
-            return yArray;
-        }
+  var graphInfo = {
+    onArray: ''
+
+  };
+  var dataObject = {
+    xAccel: [],
+    yAccel: [],
+    zAccel: [],
+    barameter: [],
+    temperature: [], 
+    numPoints: 1000
+
+  };
+  function loadFile() {
+    var input, file, fr;
+
+    if (typeof window.FileReader !== 'function') {
+        alert("The file API isn't supported on this browser yet.");
+        return;
+    }
+    input = document.getElementById('fileinput');
+    if (!input) {
+        alert("Um, couldn't find the fileinput element.");
+    }
+    else if (!input.files) {
+        alert("This browser doesn't seem to support the `files` property of file inputs.");
+    }
+    else if (!input.files[0]) {
+        alert("Please select a file before clicking 'Load'");
+    }
+    else {
+        file = input.files[0];
+        fr = new FileReader();
+        fr.onload = receivedText;
+        fr.readAsText(file);
+    }
+    
+    function receivedText(e) {
+      let lines = e.target.result;
+      var newArr = JSON.parse(lines); 
+    
+      dataObject.xAccel = newArr.xAccel;
+      dataObject.yAccel = newArr.yAccel;
+      dataObject.zAccel = newArr.zAccel;
+      dataObject.barameter = newArr.barameter;
+      dataObject.temperature = newArr.temperature;
+
+      document.getElementById('output').innerHTML = dataObject.numPoints;
+
+    }
+  }
+  function getDataArray(dataType){
+    returnData = [];
+
+    if(dataType == 'xAccel'){
+        returnData = dataObject.xAccel;
+
+    }
+    else if(dataType == 'yAccel'){
+        returnData = dataObject.yAccel;
+
+    }
+    else if(dataType == 'zAccel'){
+        returnData = dataObject.zAccel;
+
+    }
+    else if(dataType == 'barameter'){
+        returnData = dataObject.barameter;
+
+    }
+    else if(dataType == 'temperature') {
+        returnData = dataObject.temperature;  
+
+    }
+    return returnData;
+
+  }
+  
+  function clearGraphSpace(){  //clears graphs
+      var options = {
+          data: [] 
+      };
+ 
+      var chart = new CanvasJS.Chart("chartContainer0", options);
+      chart.render();
+ 
+  }
+  function dropDownFunction(num){
+      dropDown = "myDropdown" + num;
+      document.getElementById(dropDown).classList.toggle("show");
+ 
+  }
+  
+  function makeGraph(chartNumber, graphNumber, dataType) {  //makes the actual graphs
+      document.getElementById(graphNumber).classList.toggle("show"); //clears graphs
+      
+      if(graphInfo.onArray.split(dataType).length == 1){
+        graphInfo.onArray = graphInfo.onArray + dataType;
+
+      }
+      else{
+        graphInfo.onArray = graphInfo.onArray.split(dataType)[0] + graphInfo.onArray.split(dataType)[1];
+
+      }
+      document.getElementById('output').innerHTML = graphInfo.onArray;
+      
+      dataArray = getDataArray(dataType);
+      var xArray = [];
+
+      for(var i = 0; i < dataObject.numPoints; i++){
+          xArray.push(i);
+
+      }
+      var xAccelTrace = {
+          type: 'scatter',
+          name: 'x Acceleration'
+        };
+      var yAccelTrace = {
+          type: 'scatter',
+          name: 'y Acceleration'
+        };
+      var zAccelTrace = {type: 'scatter'};
+      var barameterTrace = {type: 'scatter'};
+      var temperatureTrace = {type: 'scatter'};
+
+      if(graphInfo.onArray.split('xAccel').length == 2){
+        xAccelTrace.x = xArray;
+        xAccelTrace.y = dataObject.xAccel;
+
+      }
+      if(graphInfo.onArray.split('yAccel').length == 2){
+        yAccelTrace.x = xArray;
+        yAccelTrace.y = dataObject.yAccel;
+
+      }      
+      if(graphInfo.onArray.split('zAccel').length == 2){
+        zAccelTrace.x = xArray;
+        zAccelTrace.y = dataObject.zAccel;
         
-        function myFunction1(chartNumber) {
-            var limit = 50000;
-            var x = 100;    
-            var data = [];
-            var dataSeries = { type: "line" };
-            var dataPoints = [];
-            var xArray = randomPoints();
-            for (var i = 0; i < limit; i += 1) {
-                x += dataObject.points[i][0];
-                dataPoints.push({
-                    x: i,
-                    y: x
-                });
-            }
-            dataSeries.dataPoints = dataPoints;
-            data.push(dataSeries);
+      }
+      if(graphInfo.onArray.split('barameter').length == 2){
+        barameterTrace.x = xArray;
+        barameterTrace.y = dataObject.barameter;
 
-            var options = {
-                zoomEnabled: true,
-                animationEnabled: true,
-                title: {
-                    text: "Distance traveled in x direction over time"
-                },
-                axisY: {
-                    includeZero: false,
-                    lineThickness: 1
-                },
-                data: data 
-            };
-            
-            if( chartNumber == 0 ){
-                var chart = new CanvasJS.Chart("chartContainer0", options);
-                chart.render();
-            }
-            else{
-                var chart = new CanvasJS.Chart("chartContainer1", options);
-                chart.render();
+      }
+      if(graphInfo.onArray.split('temperature').length == 2){    
+        temperatureTrace.x = xArray;
+        temperatureTrace.y = dataObject.temperature;   
+                
+      }      
+      var data = [xAccelTrace, yAccelTrace, zAccelTrace, barameterTrace, temperatureTrace];
 
-            }        
+      Plotly.newPlot('chartContainer0', data);
+
+  }
+  function make3DGraph(){
+    var xArray = dataObject.xAccel;
+    var yArray = dataObject.yAccel;
+    var zArray = dataObject.zAccel;
+    var cArray = [];
+
+    for(var i = 0; i < dataObject.numPoints; i++){
+        cArray[i] = i
+
+    }
+    Plotly.plot('graph', [{
+        type: 'scatter3d',
+        mode: 'lines',
+        x: xArray,
+        y: yArray,
+        z: zArray,
+        opacity: 1,
+        line: {
+            width: 3,
+            color: cArray,
+            reversescale: false
         }
-        function myFunction2(chartNumber){ 
-            var limit = 50000;
-            var y = 100;    
-            var data = [];
-            var dataSeries = { type: "line" };
-            var dataPoints = [];
-            for (var i = 0; i < limit; i += 1) {
-                y += dataObject.points[i][1];
-                dataPoints.push({
-                    x: i,
-                    y: y
-                });
-            }
-            dataSeries.dataPoints = dataPoints;
-            data.push(dataSeries);
-            
-            //Better to construct options first and then pass it as a parameter
-            var options = {
-                zoomEnabled: true,
-                animationEnabled: true,
-                title: {
-                    text: "Distance traveled in y direction over time"
-                },
-                axisY: {
-                    includeZero: false,
-                    lineThickness: 1
-                },
-                data: data  // random data
-            };
-            
-            if( chartNumber == 0 ){
-                var chart = new CanvasJS.Chart("chartContainer0", options);
-                chart.render();
-            }
-            else{
-                var chart = new CanvasJS.Chart("chartContainer1", options);
-                chart.render();
-
-            }  
-        }
-        function myFunction3(chartNumber){
-            var limit = 50000;
-            var z = 100;    
-            var data = [];
-            var dataSeries = { type: "line" };
-            var dataPoints = [];
-            for (var i = 0; i < limit; i += 1) {
-                z += dataObject.points[i][2];
-                dataPoints.push({
-                    x: i,
-                    y: z
-                });
-            }
-            dataSeries.dataPoints = dataPoints;
-            data.push(dataSeries);
-            
-            //Better to construct options first and then pass it as a parameter
-            var options = {
-                zoomEnabled: true,
-                animationEnabled: true,
-                title: {
-                    text: "Distance traveled in z direction over time"
-                },
-                axisY: {
-                    includeZero: false,
-                    lineThickness: 1
-                },
-                data: data  // random data
-            };
-            
-            if( chartNumber == 0 ){
-                var chart = new CanvasJS.Chart("chartContainer0", options);
-                chart.render();
-            }
-            else{
-                var chart = new CanvasJS.Chart("chartContainer1", options);
-                chart.render();
-
-            }  
-        }
-        
-        </script>
+        }], {
+        height: 640
+        }, {}, {showSendToCloud: true});
+    
+  }
+</script>
 </html>
