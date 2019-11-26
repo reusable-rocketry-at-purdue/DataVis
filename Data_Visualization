@@ -113,7 +113,7 @@
         </form><br>
         <button type="button" id="test" onclick="make3DGraph()" class="startButton">Make 3D graph</button><br>
         <br>
-        <p1>Data Points In:</p1><p2 id = "output"></p2>
+        <p1></p1><p2 id = "output"></p2>
         <br><br>
         <div class="dropdown">
             <button onclick="dropDownFunction(0)" class="dropbtn">Graph One</button>
@@ -122,7 +122,8 @@
                 <button type="button" id="test" onclick="makeGraph(0, 'myDropdown0', 'yAccel')" class="dropbtn2">y-axis</button>
                 <button type="button" id="test" onclick="makeGraph(0, 'myDropdown0', 'zAccel')" class="dropbtn2">z-axis</button>
                 <button type="button" id="test" onclick="makeGraph(0, 'myDropdown0', 'barameter')" class="dropbtn2">barameter</button>
-                <button type="button" id="test" onclick="makeGraph(0, 'myDropdown0', 'temperature')" class="dropbtn2">z-temperature</button>
+                <button type="button" id="test" onclick="makeGraph(0, 'myDropdown0', 'altitude')" class="dropbtn2">altitude</button>
+                <button type="button" id="test" onclick="makeGraph(0, 'myDropdown0', 'gps')" class="dropbtn2">gps</button>
             </div>
         </div>
     </header>
@@ -136,10 +137,10 @@
  
 </body>
  
-  <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  <script type="text/javascript" src="testDataPoints.js"></script>
-  <script src="data.js"></script>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script type="text/javascript" src="testDataPoints.js"></script>
+<script src="data.js"></script>
  
 <script type="text/javascript">
 
@@ -147,13 +148,7 @@
     onArray: ''
 
   };
-  var dataObject = {
-    xAccel: [],
-    yAccel: [],
-    zAccel: [],
-    barameter: [],
-    temperature: [], 
-    numPoints: 1000
+  var line_object = {
 
   };
   function loadFile() {
@@ -181,54 +176,34 @@
     }
     
     function receivedText(e) {
-      let lines = e.target.result;
-      var newArr = JSON.parse(lines); 
-    
-      dataObject.xAccel = newArr.xAccel;
-      dataObject.yAccel = newArr.yAccel;
-      dataObject.zAccel = newArr.zAccel;
-      dataObject.barameter = newArr.barameter;
-      dataObject.temperature = newArr.temperature;
+      let raw_data = e.target.result;       
+      var data_lines = raw_data.split('\n')   //array of individual lines of JSON file
 
-      document.getElementById('output').innerHTML = dataObject.numPoints;
+      line_object_split = data_lines[0].split('"')
+      lines_object_names = []
 
-    }
-  }
-  function getDataArray(dataType){
-    returnData = [];
+      for(var i = 1; i < line_object_split.length; i = i + 2){      //creates array of all the variable names in JSON objects
+        lines_object_names.push(line_object_split[i])
 
-    if(dataType == 'xAccel'){
-        returnData = dataObject.xAccel;
+      }
+      line_object.lines_object_names = lines_object_names
 
-    }
-    else if(dataType == 'yAccel'){
-        returnData = dataObject.yAccel;
+      for(var i = 0; i < lines_object_names.length; i = i + 1){     //creates an object with all the variable arrays using first JSON object
+        temp_data = JSON.parse(data_lines[0])
+        line_object[lines_object_names[i]] = [temp_data[lines_object_names[i]]]
 
-    }
-    else if(dataType == 'zAccel'){
-        returnData = dataObject.zAccel;
+      }
+      for(var i = 1; i < data_lines.length; i = i + 1){         //adds values from the rest of the JSON objects to each variable array
 
-    }
-    else if(dataType == 'barameter'){
-        returnData = dataObject.barameter;
+        for(var j = 0; j < lines_object_names.length; j = j + 1){
+            temp_data = JSON.parse(data_lines[i])
+            line_object[lines_object_names[j]].push(temp_data[lines_object_names[j]])
+
+        }
+      }
+      document.getElementById('output').innerHTML = ' File successfully loaded';
 
     }
-    else if(dataType == 'temperature') {
-        returnData = dataObject.temperature;  
-
-    }
-    return returnData;
-
-  }
-  
-  function clearGraphSpace(){  //clears graphs
-      var options = {
-          data: [] 
-      };
- 
-      var chart = new CanvasJS.Chart("chartContainer0", options);
-      chart.render();
- 
   }
   function dropDownFunction(num){
       dropDown = "myDropdown" + num;
@@ -238,74 +213,49 @@
   
   function makeGraph(chartNumber, graphNumber, dataType) {  //makes the actual graphs
       document.getElementById(graphNumber).classList.toggle("show"); //clears graphs
-      
-      if(graphInfo.onArray.split(dataType).length == 1){
-        graphInfo.onArray = graphInfo.onArray + dataType;
+      document.getElementById('output').innerHTML = '';    //clears output
 
-      }
-      else{
-        graphInfo.onArray = graphInfo.onArray.split(dataType)[0] + graphInfo.onArray.split(dataType)[1];
+      if(graphInfo.onArray.split(dataType).length == 1)    //if the data type isn't part of onArray, then add it to onArray
+          graphInfo.onArray = graphInfo.onArray + dataType; 
 
-      }
-      document.getElementById('output').innerHTML = graphInfo.onArray;
-      
-      dataArray = getDataArray(dataType);
+      else                                                //if the data type is already part of onArray, remove it from onArray
+        graphInfo.onArray = graphInfo.onArray.split(dataType)[0] + graphInfo.onArray.split(dataType)[1]; 
+
       var xArray = [];
 
-      for(var i = 0; i < dataObject.numPoints; i++){
-          xArray.push(i);
+      for(var i = 0; i < line_object[dataType].length; i++)   //create an array for the x-axis
+          xArray.push(i); 
+
+      plot_array = []
+
+      for(var i = 0; i < line_object.lines_object_names.length; i++){    //create an array of line graphs for each data type
+          var temp = {
+            type: 'scatter',
+            name: line_object.lines_object_names[i]
+
+          }
+          plot_array.push(temp)
 
       }
-      var xAccelTrace = {
-          type: 'scatter',
-          name: 'x Acceleration'
-        };
-      var yAccelTrace = {
-          type: 'scatter',
-          name: 'y Acceleration'
-        };
-      var zAccelTrace = {type: 'scatter'};
-      var barameterTrace = {type: 'scatter'};
-      var temperatureTrace = {type: 'scatter'};
+      for(var i = 0; i < plot_array.length; i++){
 
-      if(graphInfo.onArray.split('xAccel').length == 2){
-        xAccelTrace.x = xArray;
-        xAccelTrace.y = dataObject.xAccel;
+        if(graphInfo.onArray.split(line_object.lines_object_names[i]).length == 2){    //if data type is part of onArray, print a graph for that data type
+            plot_array[i].x = xArray;
+            plot_array[i].y = line_object[line_object.lines_object_names[i]];
 
+        }
       }
-      if(graphInfo.onArray.split('yAccel').length == 2){
-        yAccelTrace.x = xArray;
-        yAccelTrace.y = dataObject.yAccel;
-
-      }      
-      if(graphInfo.onArray.split('zAccel').length == 2){
-        zAccelTrace.x = xArray;
-        zAccelTrace.y = dataObject.zAccel;
-        
-      }
-      if(graphInfo.onArray.split('barameter').length == 2){
-        barameterTrace.x = xArray;
-        barameterTrace.y = dataObject.barameter;
-
-      }
-      if(graphInfo.onArray.split('temperature').length == 2){    
-        temperatureTrace.x = xArray;
-        temperatureTrace.y = dataObject.temperature;   
-                
-      }      
-      var data = [xAccelTrace, yAccelTrace, zAccelTrace, barameterTrace, temperatureTrace];
-
-      Plotly.newPlot('chartContainer0', data);
-
+      Plotly.newPlot('chartContainer0', plot_array);    //plots the line graphs
+      
   }
   function make3DGraph(){
-    var xArray = dataObject.xAccel;
-    var yArray = dataObject.yAccel;
-    var zArray = dataObject.zAccel;
+    var xArray = line_object['xAccel'];
+    var yArray = line_object['yAccel'];
+    var zArray = line_object['zAccel'];
     var cArray = [];
 
-    for(var i = 0; i < dataObject.numPoints; i++){
-        cArray[i] = i
+    for(var i = 0; i < line_object['xAccel'].length; i++){
+        cArray[i] = i + 100
 
     }
     Plotly.plot('graph', [{
