@@ -25,6 +25,6 @@
   },
   "homepage": "https://github.com/reusable-rocketry-at-purdue/DataVis#readme",
   "dependencies": {
-    "electron": "^7.2.4"
+    "electron": "^11.5.0"
   }
 }
